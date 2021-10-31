@@ -3,7 +3,9 @@
 // The list of file replacements can be found in `angular.json`.
 
 export const environment = {
-  production: false
+  production: false,
+  firebaseApiKey: 'AIzaSyD3Izl1vTYYpeMMRwgL-tnVJteqk5tQB5Y',
+  firebaseRestUrl: 'https://identitytoolkit.googleapis.com/v1/'
 };
 
 /*

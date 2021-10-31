@@ -1,0 +1,25 @@
+<ng-template appPlaceholder></ng-template>
+<div class="row">
+    <div class="col-3">
+        <form #f="ngForm" (ngSubmit)="onSubmit(f)" *ngIf="!isLoading">
+            <div class="form-group">
+                <label>e-mail</label>
+                <input type="email" class="form-control" ngModel name="email" required email>
+            </div>
+            <div class="form-group">
+                <label>password</label>
+                <input type="password" class="form-control" ngModel name="password" required minlength="6">
+            </div>
+            <div class="form-group">
+                <button class="btn btn-primary mt-3 me-2" [disabled]="!f.valid"
+                    type="submit">{{ (isLoginMode) ? '登入' : '註冊' }}</button>
+                <button class="btn btn-primary mt-3" (click)="onSwitch()" type="button">
+                    切換到{{ (isLoginMode) ? '註冊' : '登入' }}
+                </button>
+            </div>
+        </form>
+    </div>
+    <div *ngIf="isLoading" class="d-flex mt-3 justify-content-center align-items-center">
+        <app-loading></app-loading>
+    </div>
+</div>
