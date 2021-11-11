@@ -19,7 +19,9 @@ const appRoutes: Routes = [
 
 @NgModule({
   imports: [
-    RouterModule.forRoot(appRoutes)
+    RouterModule.forRoot(appRoutes, {
+    initialNavigation: 'enabled'
+})
   ],
   exports: [RouterModule]
 })

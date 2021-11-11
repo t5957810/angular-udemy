@@ -1,33 +1,23 @@
-import { EventEmitter, Injectable } from '@angular/core';
+import { Injectable } from '@angular/core';
+import { Store } from '@ngrx/store';
 import { Subject } from 'rxjs';
 import { Ingredient } from '../shared/model/ingredient';
-import { ShoppingListService } from '../shopping-list/shopping-list.service';
+import * as ShoppingListActions from '../shopping-list/store/shopping-list.actions';
+import * as fromApp from '../store/app.reducer';
 import { Recipe } from './model/recipe';
+
 
 @Injectable({
   providedIn: 'root'
 })
 export class RecipeService {
   recipesChanged$ = new Subject<Recipe[]>();
-
-  // private recipes: Recipe[] = [
-  //   new Recipe('Test Recipe', 'description',
-  //     'https://1.bp.blogspot.com/-jucMKDEALJs/YHw8gT0GHPI/AAAAAAAAnfY/64MpJTn5cW8ZR4H0QswgjJ4wPcEjPXimQCLcBGAsYHQ/s2300/%25E6%259C%25AA%25E5%2591%25BD%25E5%2590%258D-1%25E6%258B%25B7%25E8%25B2%259D.png', 
-  //     [
-  //       new Ingredient('Mike', 20),
-  //       new Ingredient('Huo', 30)
-  //     ]
-  //     ),
-  //   new Recipe('Test Recipe2', 'description2',
-  //     'https://1.bp.blogspot.com/-uabcd3ShYrc/YVuxtDrzF5I/AAAAAAAAqlI/gB7v8vTYTkQUFcO-i8RoCiUgkAmBzkNqwCLcBGAsYHQ/s1000/%25E6%259C%25AA%25E5%2591%25BD%25E5%2590%258D-1.jpg', 
-  //     [
-  //       new Ingredient('Gho', 22)
-  //     ]
-  //     )
-  // ];
   private recipes: Recipe[] = [];
   
-  constructor(private shoppingListService: ShoppingListService) { }
+  constructor(
+    // private shoppingListService: ShoppingListService,
+    private store: Store<fromApp.AppState>
+  ) { }
 
   setRecipes(recipes: Recipe[]) {
     this.recipes = recipes;
@@ -43,7 +33,8 @@ export class RecipeService {
   }
   
   addIngredientToShoppingList(ingredients: Ingredient[]) {
-    this.shoppingListService.addShoppingLists(ingredients);
+    // this.shoppingListService.addShoppingLists(ingredients);
+    this.store.dispatch(new ShoppingListActions.AddIngredients(ingredients));
   }
 
   addRecipe(recipe: Recipe) {

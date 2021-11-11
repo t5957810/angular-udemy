@@ -1,3 +1,4 @@
+import * as fromApp from './../store/app.reducer';
 import { AlertComponent } from './../shared/component/alert/alert.component';
 import { Router } from '@angular/router';
 import { Component, ComponentFactoryResolver, OnDestroy, OnInit, ViewChild } from '@angular/core';
@@ -6,6 +7,8 @@ import { Observable, Subject, Subscription } from 'rxjs';
 import { AuthService } from './auth.service';
 import { AuthResponseData } from './model/auth-response-data';
 import { PlaceholderDirective } from '../shared/directive/placeholder.directive';
+import { Store } from '@ngrx/store';
+import * as AuthActions from './store/auth.actions';
 
 @Component({
   selector: 'app-auth',
@@ -17,20 +20,33 @@ export class AuthComponent implements OnInit, OnDestroy {
   isLoading = false;
   error = null;
   closeSub$: Subscription;
+  storeSub$: Subscription;
 
   @ViewChild(PlaceholderDirective, { static: false }) alertHost: PlaceholderDirective;
 
   constructor(
     private authService: AuthService,
     private router: Router,
-    private componentFactoryResolver: ComponentFactoryResolver) { }
+    private componentFactoryResolver: ComponentFactoryResolver,
+    private store: Store<fromApp.AppState>
+    ) { }
 
   ngOnInit(): void {
+    this.storeSub$ = this.store.select('auth').subscribe((authData) => {
+      this.isLoading = authData.loading;
+      this.error = authData.authError;
+      if(this.error) {
+        this.showErrorAlert(this.error);
+      } 
+    });
   }
 
   ngOnDestroy() {
     if(this.closeSub$) {
       this.closeSub$.unsubscribe();
+    }
+    if(this.storeSub$) {
+      this.storeSub$.unsubscribe();
     }
   }
 
@@ -48,22 +64,30 @@ export class AuthComponent implements OnInit, OnDestroy {
     this.isLoading = true;
     this.error = null;
 
-    let auth$ = new Observable<AuthResponseData>();
+    // let auth$ = new Observable<AuthResponseData>();
 
     if (this.isLoginMode) {
-      auth$ = this.authService.signIn(email, password);
+      this.store.dispatch(new AuthActions.LoginStart({
+        email: email,
+        password: password
+      }));
+      // auth$ = this.authService.signIn(email, password);
     } else {
-      auth$ = this.authService.signUp(email, password);
+      // auth$ = this.authService.signUp(email, password);
+      this.store.dispatch(new AuthActions.SignupStart({
+        email: email,
+        password: password
+      }));
     }
 
-    auth$.subscribe((responseData: AuthResponseData) => {
-      this.isLoading = false;
-      this.router.navigate(['/recipes']);
-    }, errorMessage => {
-      this.error = errorMessage;
-      this.showErrorAlert(errorMessage);
-      this.isLoading = false;
-    });
+    // auth$.subscribe((responseData: AuthResponseData) => {
+    //   this.isLoading = false;
+    //   this.router.navigate(['/recipes']);
+    // }, errorMessage => {
+    //   this.error = errorMessage;
+    //   this.showErrorAlert(errorMessage);
+    //   this.isLoading = false;
+    // });
 
     form.reset();
   }
